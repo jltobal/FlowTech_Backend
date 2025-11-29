@@ -1,19 +1,22 @@
-import { ConflictException, Injectable } from '@nestjs/common';
+import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import * as bcrypt from 'bcrypt';
 import { Usuario } from './schemas/usuario.schema';
 import { CrearUsuarioDto } from './dto/crear-usuario.dto';
+import { Interacciones } from '../interacciones/schemas/interacciones.schema';
 
 @Injectable()
 export class UsuarioService {
 
-    constructor(@InjectModel(Usuario.name) private usuarioModel: Model<Usuario>) {};
+    constructor(
+        @InjectModel(Usuario.name) private usuarioModel: Model<Usuario>, 
+        @InjectModel(Interacciones.name) private interaccionesModel: Model<Interacciones>
+    ) {};
 
     async crearUsuario(crearUsuarioDto: CrearUsuarioDto): Promise<Usuario> {
         const verificarExistencia = await this.usuarioModel.findOne({ mail: crearUsuarioDto.mail });
 
-        //Si ya existe cuenta con ese mail, arroja error
         if(verificarExistencia) {
             throw new ConflictException("Ese mail ya tiene una cuenta registrada");
         }
@@ -28,8 +31,93 @@ export class UsuarioService {
         return nuevoUsuario.save();
     }
 
-    async findAll(): Promise<Usuario[]> {
-        return this.usuarioModel.find().exec();
+    async completarUsuario(usuarioId: string, infoCuenta: any): Promise<Usuario> {
+        const usuario = await this.usuarioModel.findByIdAndUpdate(usuarioId, {
+            ...infoCuenta, 
+            perfilCompleto: true,
+        }, {new: true}).select("-password").exec();
+
+        if(!usuario) {
+            throw new NotFoundException("Usuario no encontrado");
+        }
+
+        return usuario;
+    }
+
+    async buscarPersonas(usuarioId: string, filtros: any): Promise<Usuario[]> {
+        //Busco todas las interacciones para que no se vuelvan a ver
+        const interacciones = await this.interaccionesModel.find({
+            usuarioOrigen: usuarioId,
+            interaccion: {
+                $in: ["Like", "Dislike", "Superlike"]
+            }
+        }).exec();
+
+        const usuariosInteractuados = interacciones.map(i => i.usuarioDestino.toString());
+        console.log("Usuarios interactuados en UsuarioService: ", usuariosInteractuados);
+
+        const query: any = {
+            _id:{
+                // $ne = not equal
+                $ne: usuarioId,
+                // $nin = not in
+                $nin: usuariosInteractuados
+            },
+            cuentaActiva: true,
+            perfilCompleto: true
+        }
+
+        //Aplica filtros si corresponde
+        if (filtros.genero) {
+            query.genero = filtros.genero;
+        }
+
+        if(filtros.edadMinima || filtros.edadMaxima) {
+            query.edad = {};
+            if (filtros.edadMinima) {
+                // $gte = mayor o igual que
+                query.edad.$gte = Number(filtros.edadMinima);
+            }
+            if (filtros.edadMaxima) {
+                // $lte = menor o igual que
+                query.edad.$lte = Number(filtros.edadMaxima);
+            }
+        }
+
+        if (filtros.localidad) {
+            query.localidad = filtros.localidad;
+        }
+
+        return this.usuarioModel.find(query).select("-password").exec();
+    }
+
+    async agregarLike(usuarioId: string, usuarioLikeadoId: string): Promise<void> {
+        await this.interaccionesModel.findByIdAndUpdate(usuarioId, {
+            $addToSet: {usuariosLikeados: usuarioLikeadoId}
+        });
+    }
+
+    async agregarSuperLike(usuarioId: string, usuarioSuperLikeadoId: string): Promise<void> {
+        await this.interaccionesModel.findByIdAndUpdate(usuarioId, {
+            $addToSet: {usuariosSuperLike: usuarioSuperLikeadoId}
+        });
+    }
+
+    async agregarDislike(usuarioId: string, usuarioNoGustaId: string): Promise<void> {
+        await this.interaccionesModel.findByIdAndUpdate(usuarioId, {
+            $addToSet: {usuariosNoGusta: usuarioNoGustaId}
+        });
+    }
+
+    async hacerseVip(usuarioId: string, fechaFin: Date): Promise<Usuario | null> {
+        return this.usuarioModel.findByIdAndUpdate(
+            usuarioId, 
+            {
+                vip: true,
+                vipExpiracion: fechaFin
+            },
+            {nuevo: true}
+        ).select("-password").exec();
     }
 
     async findById(id: string) {

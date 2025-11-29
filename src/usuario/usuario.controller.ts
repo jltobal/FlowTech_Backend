@@ -23,7 +23,7 @@ export class UsuarioController {
         return this.usuarioService.findById(id);
     }
 
-    @Get(':mail')
+    @Get(":mail")
     async findByMail(@Param("mail") mail: string) {
         return this.usuarioService.findByMail(mail);
     }
