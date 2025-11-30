@@ -7,19 +7,21 @@ import { UsuarioModule } from 'src/usuario/usuario.module';
 import { PassportModule } from '@nestjs/passport';
 import { JwtModule } from '@nestjs/jwt';
 import { UsuarioService } from 'src/usuario/usuario.service';
+import { InteraccionesModule } from 'src/interacciones/interacciones.module';
 
 @Module({
   imports: [
     MongooseModule.forFeature([{ name: Usuario.name, schema: UsuarioSchema }]),
     UsuarioModule,
     PassportModule,
+    InteraccionesModule,
     JwtModule.register({
-      secret: "UN_SECRETO_SEGURO",
+      secret: 'UN_SECRETO_SEGURO',
       signOptions: { expiresIn: '1h' },
-    })
+    }),
   ],
   providers: [AuthService, UsuarioService],
   controllers: [AuthController],
-  exports: [AuthService]
+  exports: [AuthService],
 })
 export class AuthModule {}
