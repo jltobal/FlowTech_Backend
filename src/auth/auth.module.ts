@@ -15,7 +15,7 @@ import { UsuarioService } from 'src/usuario/usuario.service';
     PassportModule,
     JwtModule.register({
       secret: "UN_SECRETO_SEGURO",
-      signOptions: { expiresIn: '1h' },
+      signOptions: { expiresIn: '7d' },
     })
   ],
   providers: [AuthService, UsuarioService],

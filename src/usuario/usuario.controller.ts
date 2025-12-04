@@ -1,4 +1,4 @@
-import { Controller, Post, Body, Get, Delete, ValidationPipe, Param } from '@nestjs/common';
+import { Controller, Post, Body, Get, Delete, ValidationPipe, Param, Req, Query } from '@nestjs/common';
 import { UsuarioService } from './usuario.service';
 import { CrearUsuarioDto } from './dto/crear-usuario.dto';
 import { Usuario } from './schemas/usuario.schema';
@@ -13,9 +13,23 @@ export class UsuarioController {
         return this.usuarioService.crearUsuario(crearUsuarioDto);
     }
 
-    @Get()
-    async findAll(): Promise<Usuario[]> {
-        return this.usuarioService.findAll();
+    @Get("/buscarPersonas")
+    async buscarPersonas(
+        @Req() req, 
+        @Query("limit") limit: number = 10,
+        @Query("genero") genero?: string,
+        @Query("edadMinima") edadMinima?: number,
+        @Query("edadMaxima") edadMaxima?: number,
+        @Query("localidad") localidad?: string    
+    ): Promise<Usuario[]> {
+        return this.usuarioService.buscarPersonas(
+            req.usuario._id,
+            {limit,
+            genero,
+            edadMinima,
+            edadMaxima,
+            localidad}
+        );
     }
 
     @Get(":id")
