@@ -1,10 +1,10 @@
 import { Injectable } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
-import { Match } from "./schemas/match.schema";
+import { Match } from "./schemas/matches.schema";
 import { UsuarioService } from "src/usuario/usuario.service";
 import { Model } from "mongoose";
-import { MatchDto, RazonDislike, TipoInteraccion } from "./dto/matches.dto";
 import { Interacciones } from "src/interacciones/schemas/interacciones.schema";
+import { CrearInteraccionDto, RazonDislike, TipoInteraccion } from "src/interacciones/dtos/crearInteraccion.dto";
 
 @Injectable()
 export class MatchesService {
@@ -14,8 +14,8 @@ export class MatchesService {
         private usuarioService: UsuarioService
     ) {}
 
-    async crearInteraccion(usuarioId: string, matchDto: MatchDto) {
-        const { usuarioDestinoId, tipo, razonDislike, valorRechazado } = matchDto;
+    async crearInteraccion(usuarioId: string, interaccionDto: CrearInteraccionDto) {
+        const { usuarioDestinoId, tipo, razonDislike, valorRechazado } = interaccionDto;
 
         const usuarioObjetivo = await this.usuarioService.findById(usuarioDestinoId);
 

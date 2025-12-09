@@ -9,12 +9,14 @@ export class AuthController {
 
     @Post('login')
     async login(@Body() loginDto: LoginDto){
+        console.log("Validando que este usuario exista: ", loginDto)
         const usuario = await this.authService.validarUsuario(loginDto.mail, loginDto.password);
 
         if(!usuario){
             throw new UnauthorizedException('Mail o contraseña incorrecto. Intente de nuevo.')
         }
         
+        console.log("Usuario encontrado y logeando")
         return this.authService.login(usuario);
     }
 }

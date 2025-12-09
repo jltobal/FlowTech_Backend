@@ -1,6 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import * as mongoose from 'mongoose';
-import { RazonDislike } from '../../matches/dto/matches.dto';
+import { RazonDislike } from '../dtos/crearInteraccion.dto';
 import { Types } from 'mongoose';
 
 @Schema({ timestamps: true })

@@ -1,4 +1,4 @@
-import { Prop, Schema } from "@nestjs/mongoose";
+import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 import { Types } from 'mongoose';
 
 @Schema({ timestamps: true})
@@ -12,3 +12,5 @@ export class Match {
     @Prop({ default: true })
     estaActivo: boolean;
 }
+
+export const MatchSchema = SchemaFactory.createForClass(Match);
