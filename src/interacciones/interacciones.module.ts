@@ -18,6 +18,6 @@ const MongooseInteracciones = MongooseModule.forFeature([
   ],
   controllers: [InteraccionesController],
   providers: [InteraccionesService],
-  exports: [InteraccionesService, MongooseInteracciones],
+  exports: [InteraccionesService],
 })
 export class InteraccionesModule {}

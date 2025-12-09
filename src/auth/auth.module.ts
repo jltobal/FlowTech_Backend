@@ -9,10 +9,14 @@ import { JwtModule } from '@nestjs/jwt';
 import { UsuarioService } from 'src/usuario/usuario.service';
 import { InteraccionesModule } from 'src/interacciones/interacciones.module';
 import { MatchesModule } from 'src/matches/matches.module';
+import { Interacciones, InteraccionesSchema } from 'src/interacciones/schemas/interacciones.schema';
 
 @Module({
   imports: [
-    MongooseModule.forFeature([{ name: Usuario.name, schema: UsuarioSchema }]),
+    MongooseModule.forFeature([
+      { name: Usuario.name, schema: UsuarioSchema },
+      {name: Interacciones.name, schema: InteraccionesSchema}
+    ]),
     UsuarioModule,
     InteraccionesModule,
     MatchesModule,
