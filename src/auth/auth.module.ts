@@ -7,11 +7,15 @@ import { UsuarioModule } from 'src/usuario/usuario.module';
 import { PassportModule } from '@nestjs/passport';
 import { JwtModule } from '@nestjs/jwt';
 import { UsuarioService } from 'src/usuario/usuario.service';
+import { InteraccionesModule } from 'src/interacciones/interacciones.module';
+import { MatchesModule } from 'src/matches/matches.module';
 
 @Module({
   imports: [
     MongooseModule.forFeature([{ name: Usuario.name, schema: UsuarioSchema }]),
     UsuarioModule,
+    InteraccionesModule,
+    MatchesModule,
     PassportModule,
     JwtModule.register({
       secret: "UN_SECRETO_SEGURO",

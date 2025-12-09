@@ -5,7 +5,7 @@ export class Usuario {
   @Prop({ required: true, unique: true })
   username: string;
 
-  @Prop({ required: true, minlength: 4, select: false })
+  @Prop({ required: true, minlength: 4 })
   password: string;
 
   @Prop({ required: true, unique: true, match: /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/ })

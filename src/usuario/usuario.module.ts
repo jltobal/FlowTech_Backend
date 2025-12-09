@@ -8,6 +8,7 @@ import { Interacciones, InteraccionesSchema } from '../interacciones/schemas/int
 @Module({
   imports: [MongooseModule.forFeature([{ name: Usuario.name, schema: UsuarioSchema }, {name: Interacciones.name, schema: InteraccionesSchema}])],
   providers: [UsuarioService],
-  controllers: [UsuarioController]
+  controllers: [UsuarioController],
+  exports: [UsuarioService]
 })
 export class UsuarioModule {}
