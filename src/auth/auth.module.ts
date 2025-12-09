@@ -17,6 +17,7 @@ import { MatchesModule } from 'src/matches/matches.module';
     InteraccionesModule,
     MatchesModule,
     PassportModule,
+    InteraccionesModule,
     JwtModule.register({
       secret: "UN_SECRETO_SEGURO",
       signOptions: { expiresIn: '7d' },
@@ -24,6 +25,6 @@ import { MatchesModule } from 'src/matches/matches.module';
   ],
   providers: [AuthService, UsuarioService],
   controllers: [AuthController],
-  exports: [AuthService]
+  exports: [AuthService],
 })
 export class AuthModule {}
